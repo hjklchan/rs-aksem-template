@@ -7,3 +7,9 @@ edition = "2021"
 
 [dependencies]
 tokio = { version = "1.38.0", features = ["full"] }
+thiserror = "1.0.61"
+axum = "0.7.5"
+
+[dependencies.sqlx]
+version = "0.7.4"
+features = ["runtime-tokio-native-tls", "mysql", "chrono", "uuid"]

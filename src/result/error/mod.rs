@@ -1,6 +1,7 @@
 pub mod db;
+mod status;
 
-use super::status::Status;
+pub use status::Status;
 use axum::{response::IntoResponse, Json};
 use thiserror::Error;
 

@@ -1,2 +1,5 @@
-pub(crate) mod status;
 pub mod error;
+
+use error::ApiError;
+
+pub type OhMyResult<T> = Result<T, ApiError>;

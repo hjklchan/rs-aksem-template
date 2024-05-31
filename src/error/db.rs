@@ -9,6 +9,8 @@ pub struct DatabaseError(#[from] sqlx::Error);
 /// 为数据库错误实现 IntoResponse 特征
 impl IntoResponse for DatabaseError {
     fn into_response(self) -> axum::response::Response {
-        unimplemented!()
+        self.0.to_string().into_response()
     }
 }
+
+type new_error = sqlx::Error;

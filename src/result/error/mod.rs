@@ -1,4 +1,3 @@
-pub mod db;
 mod status;
 
 pub use status::Status;
@@ -10,7 +9,7 @@ use thiserror::Error;
 pub enum ApiError {
     // 数据库相关的错误
     #[error(transparent)]
-    Database(#[from] db::DatabaseError),
+    Database(#[from] sqlx::Error),
     // TODO: 模块级的错误示例
 }
 
@@ -18,8 +17,9 @@ pub enum ApiError {
 impl IntoResponse for ApiError {
     fn into_response(self) -> axum::response::Response {
         let status: Status<()> = match self {
-            Self::Database(err) => Status::Bad(10001, err.to_string()),
+            Self::Database(err) => Status::Bad(10002, err.to_string()),
         };
+
         // Send response
         Json(status.to_reply()).into_response()
     }

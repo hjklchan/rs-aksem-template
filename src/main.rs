@@ -9,7 +9,7 @@ async fn main() -> std::io::Result<()> {
     config::init();
 
     // 创建数据库连接池
-    // TODO: database_url 应该通过配置或 ** 全局静态 ** 配置获取
+    // TODO: database_url 应该通过配置或 **全局静态** 配置获取
     let database_url = config::get("DATABASE_URL");
     let pool = db::must_connect_pool(database_url).await;
 

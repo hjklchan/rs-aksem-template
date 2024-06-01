@@ -12,7 +12,7 @@ pub async fn must_connect_pool(database_url: impl AsRef<str>) -> Pool<MySql> {
 }
 
 /// ### 连接数据库连接池
-/// 
+///
 /// 返回 Result<Pool<MySql>, sqlx::Error>
 pub async fn connect_pool(database_url: impl AsRef<str>) -> Result<Pool<MySql>, sqlx::Error> {
     MySqlPoolOptions::new().connect(database_url.as_ref()).await

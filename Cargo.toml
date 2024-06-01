@@ -1,3 +1,5 @@
+workspace = { members = ["crates/db"] }
+
 [package]
 name = "rs-aksem"
 version = "0.1.0"

@@ -2,14 +2,13 @@ pub mod root;
 pub mod tickets;
 
 use axum::{
-    extract::State,
     routing::{delete, get, patch, post},
     Router,
 };
 use root::root_handler;
 
 /// 路由
-pub fn routes<S>(state: State<S>) -> Router
+pub fn routes<S, S2>(state: S) -> Router<S2>
 where
     S: Clone + Send + Sync + 'static,
 {

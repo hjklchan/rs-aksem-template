@@ -1166,6 +1166,7 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "db",
+ "dotenvy",
  "serde",
  "serde_json",
  "sqlx",

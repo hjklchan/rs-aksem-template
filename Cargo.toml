@@ -19,4 +19,4 @@ dotenvy = "0.15.7"
 
 [dependencies.sqlx]
 version = "0.7.4"
-features = ["runtime-tokio-native-tls", "mysql", "chrono", "uuid"]
+features = ["runtime-tokio-native-tls", "mysql", "chrono"]

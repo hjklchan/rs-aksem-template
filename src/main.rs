@@ -14,7 +14,7 @@ async fn main() -> std::io::Result<()> {
     let pool = db::must_connect_pool(database_url).await;
 
     // 初始化 Axum 全局状态
-    let app_state = Arc::new(app_state::new(pool));
+    let app_state = app_state::new(pool);
     // 实例化路由
     let routes = handler::routes(app_state);
     // 实例化 App

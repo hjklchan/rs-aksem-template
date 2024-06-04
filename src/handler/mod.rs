@@ -1,16 +1,17 @@
 pub mod root;
 pub mod tickets;
 
+use std::sync::Arc;
+
 use axum::{
-    routing::{delete, get, patch, post},
-    Router,
+    routing::{delete, get, patch, post}, Router
 };
 use root::root_handler;
 
+use crate::app_state::AppState;
+
 /// 路由
-pub fn routes<S, S2>(state: S) -> Router<S2>
-where
-    S: Clone + Send + Sync + 'static,
+pub fn routes(state: AppState) -> Router
 {
     Router::new()
         .route("/", get(root_handler))

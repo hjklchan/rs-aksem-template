@@ -1,5 +1,7 @@
-use crate::result::OhMyResult;
+use axum::extract::State;
 
-pub async fn create_handler() -> OhMyResult<()> {
+use crate::{app_state::AppState, result::OhMyResult};
+
+pub async fn create_handler(State(state): State<AppState>) -> OhMyResult<()> {
     OhMyResult::Ok(())
 }

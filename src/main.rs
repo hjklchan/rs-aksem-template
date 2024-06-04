@@ -1,6 +1,6 @@
 use axum::Router;
 use rs_aksem::{app_state, config, handler, must_connect_pool};
-use std::{net::SocketAddr, sync::Arc};
+use std::net::SocketAddr;
 use tokio::net::TcpListener;
 
 #[tokio::main]

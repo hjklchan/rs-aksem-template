@@ -1,5 +1,5 @@
 use axum::Router;
-use rs_aksem::{app_state, config, handler};
+use rs_aksem::{app_state, config, handler, must_connect_pool};
 use std::{net::SocketAddr, sync::Arc};
 use tokio::net::TcpListener;
 
@@ -11,7 +11,7 @@ async fn main() -> std::io::Result<()> {
     // 创建数据库连接池
     // TODO: database_url 应该通过配置或 **全局静态** 配置获取
     let database_url = config::get("DATABASE_URL");
-    let pool = db::must_connect_pool(database_url).await;
+    let pool = must_connect_pool(database_url).await;
 
     // 初始化 Axum 全局状态
     let app_state = app_state::new(pool);

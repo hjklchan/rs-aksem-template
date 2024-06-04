@@ -1,8 +1,6 @@
 pub mod root;
 pub mod tickets;
 
-use std::sync::Arc;
-
 use axum::{
     routing::{delete, get, patch, post}, Router
 };

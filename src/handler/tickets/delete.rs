@@ -3,7 +3,7 @@ use axum::extract::{Path, State};
 use crate::{
     app_state::AppState,
     result::{
-        error::{db::DatabaseError, ticket::TicketError, ApiError},
+        error::{db::DatabaseError, ticket::TicketError},
         OhMyResult,
     },
 };

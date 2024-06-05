@@ -1,21 +1,33 @@
-# Start with a rust alpine image
-FROM rust:1.77.2
-# This is important, see https://github.com/rust-lang/docker-rust/issues/85
-ENV RUSTFLAGS="-C target-feature=-crt-static"
-# if needed, add additional dependencies here
-RUN apk add --no-cache musl-dev
-# set the workdir and copy the source into it
-WORKDIR /app
-COPY ./ /app
-# do a release build
-RUN cargo build --release
-RUN strip target/release/mini-docker-rust
+# Building Stage
+FROM rust:latest as cargo-builder
 
-# use a plain alpine image, the alpine version needs to match the builder
+ENV  RUSTUP_DIST_SERVER="https://rsproxy.cn" \
+    RUSTUP_UPDATE_ROOT="https://rsproxy.cn/rustup"
+
+RUN mkdir ~/.cargo \
+    && echo -e '[source.crates-io]' >> ~/.cargo/config.toml \
+    && echo 'replace-with = "rsproxy-sparse"' >> ~/.cargo/config.toml \
+    && echo '[source.rsproxy]' >> ~/.cargo/config.toml \
+    && echo 'registry = "https://rsproxy.cn/crates.io-index"' >> ~/.cargo/config.toml \
+    && echo '[source.rsproxy-sparse]' >> ~/.cargo/config.toml \
+    && echo 'registry = "sparse+https://rsproxy.cn/index/"' >> ~/.cargo/config.toml \
+    && echo '[registries.rsproxy]' >> ~/.cargo/config.toml \
+    && echo 'index = "https://rsproxy.cn/crates.io-index"' >> ~/.cargo/config.toml \
+    && echo '[net]' >> ~/.cargo/config.toml \
+    && echo 'git-fetch-with-cli = true' >> ~/.cargo/config.toml
+
+WORKDIR /app
+COPY Cargo.toml Cargo.toml
+COPY Cargo.lock Cargo.lock
+RUN mkdir src
+RUN echo 'fn main() { println!("If you see this, It means that the building has failed") }' > src/main.rs
+RUN cargo build --release
+RUN rm -f target/release/deps/rs-aksem*
+RUN cargo build --release
+RUN cargo install --path .
+
+# Filnal Stage
 FROM alpine:latest
-# if needed, install additional dependencies here
-RUN apk add --no-cache libgcc
-# copy the binary into the final image
-COPY --from=0 /app/target/release/mini-docker-rust .
-# set the binary as entrypoint
-ENTRYPOINT ["/mini-docker-rust"]
+COPY --from=cargo-builder /usr/local/cargo/bin/app /usr/local/bin/app
+COPY .env /usr/local/bin/app/.env
+CMD [ "rs-aksem" ]

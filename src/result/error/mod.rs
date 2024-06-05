@@ -1,7 +1,8 @@
-mod status;
+// errors
+pub mod db;
+pub mod ticket;
 
-use axum::{response::IntoResponse, Json};
-pub use status::Status;
+use axum::response::IntoResponse;
 use thiserror::Error;
 
 /// ### 此处定义错误集
@@ -9,18 +10,20 @@ use thiserror::Error;
 pub enum ApiError {
     // 数据库相关的错误
     #[error(transparent)]
-    Database(#[from] sqlx::Error),
+    Database(#[from] db::DatabaseError),
     // TODO: 模块级的错误示例
+    #[error("{0}")]
+    Ticket(#[from] ticket::TicketError),
 }
 
 /// ### 为错误集实现 IntoResponse 特征
 impl IntoResponse for ApiError {
     fn into_response(self) -> axum::response::Response {
-        let status: Status<()> = match self {
-            Self::Database(err) => Status::Bad(10002, err.to_string()),
-        };
-
-        // Send response
-        Json(status.to_reply()).into_response()
+        match self {
+            Self::Database(err) => err.into_response(),
+            Self::Ticket(err) => err.into_response(),
+        }
     }
 }
+
+

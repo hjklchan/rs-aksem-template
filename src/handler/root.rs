@@ -1,12 +1,10 @@
 use axum::response::IntoResponse;
 
-use crate::result::{error::ApiError, OhMyResult};
+use crate::result::{error::ticket::TicketError, OhMyResult};
 
 /// Test ok
 pub async fn root_handler() -> impl IntoResponse {
-    let is_ok: OhMyResult<()> = Err(ApiError::Database(sqlx::Error::ColumnNotFound(
-        "xmy".into(),
-    )));
+    let rs: OhMyResult<()> = Err(TicketError::NotFound.into());
 
-    is_ok
+    rs
 }

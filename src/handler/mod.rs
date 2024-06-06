@@ -19,5 +19,6 @@ pub fn routes(state: AppState) -> Router
         .route("/tickets/:id", patch(tickets::update_handler))
         .route("/tickets/:id", get(tickets::get_handler))
         .route("/tickets", get(tickets::list_handler))
+        .route("/tickets/:id/status", patch(tickets::change_status_handler))
         .with_state(state)
 }

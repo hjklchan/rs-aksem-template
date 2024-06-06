@@ -29,7 +29,6 @@ async fn main() -> std::io::Result<()> {
     println!("Listen on http://{}", addr.to_string());
 
     // 启动服务
-    // FIXME: 修复错误
     axum::serve(tcp_listener, app).await?;
 
     Ok(())

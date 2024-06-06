@@ -1,7 +1,7 @@
 -- Add up migration script here
 CREATE TABLE IF NOT EXISTS `tickets` (
-    `id` BIGINT NOT NULL,
-    `assignee_id` VARCHAR(50) NULL,
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `assignee_id` BIGINT UNSIGNED NULL,
     `title` VARCHAR(100) NOT NULL,
     `description` VARCHAR(255) NULL,
     `body` TEXT NULL,

@@ -19,7 +19,7 @@ pub async fn change_status_handler(
     Path(ticket_id): Path<u64>,
     Json(req): Json<ChangeStatusReq>,
 ) -> OhMyResult<()> {
-    let sql = "UPDATE SET `status` = ? WHERE `id ` = ? LIMIT 1";
+    let sql = "UPDATE `tickets` SET `status` = ? WHERE `id` = ? LIMIT 1";
     let _result = sqlx::query(sql)
         .bind(req.new_status)
         .bind(ticket_id)

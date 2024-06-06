@@ -6,14 +6,14 @@ mod list;
 mod update;
 
 use ::chrono::Utc;
-use sqlx::types::chrono::{self, Local};
+use sqlx::types::chrono::{self};
 
+pub use change_status::change_status_handler;
 pub use create::create_handler;
 pub use delete::delete_handler;
 pub use get::get_handler;
 pub use list::list_handler;
 pub use update::update_handler;
-pub use change_status::change_status_handler;
 
 #[derive(Debug, serde::Serialize)]
 pub struct Ticket {

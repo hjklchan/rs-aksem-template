@@ -5,13 +5,12 @@ use crate::{
     result::{error::db::DatabaseError, OhMyResult},
 };
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Debug)]
 pub struct CreateTicketReq {
     assignee_id: Option<u64>,
     title: String,
     description: Option<String>,
     body: Option<String>,
-    #[serde(default)]
     status: u8,
 }
 
@@ -31,10 +30,9 @@ pub async fn create_handler(
         body,
         status,
     } = req;
-
     let sql = r#"
         INSERT INTO `tickets` ( `assignee_id`, `title`, `description`, `body`, `status`, `created_at`, `updated_at` )
-        VALUES ( ?, ?, ?, ?, ? );
+        VALUES ( ?, ?, ?, ?, ?, NOW(), NOW() );
     "#;
     let new_id = sqlx::query(sql)
         .bind(assignee_id)

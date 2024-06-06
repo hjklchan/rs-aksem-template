@@ -1,6 +1,7 @@
 pub mod app_state;
 pub mod config;
 pub mod handler;
+pub mod entity;
 pub mod result;
 
 use sqlx::{mysql::MySqlPoolOptions, MySql, Pool};

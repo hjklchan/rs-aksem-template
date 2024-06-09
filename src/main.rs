@@ -23,7 +23,7 @@ async fn main() -> std::io::Result<()> {
     // Tcp 监听器
     // TODO: addr 应该通过配置或 **全局静态** 配置获取
     let port = config::get("SERVER_PORT");
-    let addr = SocketAddr::from(([127, 0, 0, 1], port.parse().unwrap()));
+    let addr = SocketAddr::from(([0, 0, 0, 0], port.parse().unwrap()));
     let tcp_listener = TcpListener::bind(addr).await?;
     // TODO: 应该使用日志库打印
     println!("Listen on http://{}", addr.to_string());

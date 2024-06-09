@@ -1,5 +1,5 @@
 # Building Stage
-FROM rust:latest as cargo-builder
+FROM rust:1.77.2 as cargo-builder
 
 ENV  RUSTUP_DIST_SERVER="https://rsproxy.cn" \
     RUSTUP_UPDATE_ROOT="https://rsproxy.cn/rustup"
@@ -16,18 +16,24 @@ RUN mkdir ~/.cargo \
     && echo '[net]' >> ~/.cargo/config.toml \
     && echo 'git-fetch-with-cli = true' >> ~/.cargo/config.toml
 
+RUN apt-get update 
+RUN apt-get install musl-tools -y 
+RUN rustup target add x86_64-unknown-linux-musl 
+
 WORKDIR /app
 COPY Cargo.toml Cargo.toml
-COPY Cargo.lock Cargo.lock
 RUN mkdir src
 RUN echo 'fn main() { println!("If you see this, It means that the building has failed") }' > src/main.rs
-RUN cargo build --release
-RUN rm -f target/release/deps/rs-aksem*
-RUN cargo build --release
-RUN cargo install --path .
+RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl 
+RUN rm -f target/x86_64-unknown-linux-musl/release/deps/rs-aksem*
+# RUN cargo build --release
+# RUN rm -f target/release/deps/rs-aksem*
+# RUN cargo build --release
+# RUN cargo install --path .
+COPY . . 
+RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl 
 
 # Filnal Stage
 FROM alpine:latest
-COPY --from=cargo-builder /usr/local/cargo/bin/app /usr/local/bin/app
-COPY .env /usr/local/bin/app/.env
+COPY --from=cargo-builder /app/target/x86_64-unknown-linux-musl/release/rs-aksem /usr/local/bin/rs-aksem
 CMD [ "rs-aksem" ]

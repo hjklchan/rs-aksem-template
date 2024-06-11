@@ -1,39 +1,30 @@
-# Building Stage
-FROM rust:1.77.2 as cargo-builder
+ARG BASE_IMAGE=rust:1.78-slim-buster
 
-ENV  RUSTUP_DIST_SERVER="https://rsproxy.cn" \
-    RUSTUP_UPDATE_ROOT="https://rsproxy.cn/rustup"
-
-RUN mkdir ~/.cargo \
-    && echo -e '[source.crates-io]' >> ~/.cargo/config.toml \
-    && echo 'replace-with = "rsproxy-sparse"' >> ~/.cargo/config.toml \
-    && echo '[source.rsproxy]' >> ~/.cargo/config.toml \
-    && echo 'registry = "https://rsproxy.cn/crates.io-index"' >> ~/.cargo/config.toml \
-    && echo '[source.rsproxy-sparse]' >> ~/.cargo/config.toml \
-    && echo 'registry = "sparse+https://rsproxy.cn/index/"' >> ~/.cargo/config.toml \
-    && echo '[registries.rsproxy]' >> ~/.cargo/config.toml \
-    && echo 'index = "https://rsproxy.cn/crates.io-index"' >> ~/.cargo/config.toml \
-    && echo '[net]' >> ~/.cargo/config.toml \
-    && echo 'git-fetch-with-cli = true' >> ~/.cargo/config.toml
-
-RUN apt-get update 
-RUN apt-get install musl-tools -y 
-RUN rustup target add x86_64-unknown-linux-musl 
+FROM ${BASE_IMAGE} AS planner
 
 WORKDIR /app
-COPY Cargo.toml Cargo.toml
-RUN mkdir src
-RUN echo 'fn main() { println!("If you see this, It means that the building has failed") }' > src/main.rs
-RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl 
-RUN rm -f target/x86_64-unknown-linux-musl/release/deps/rs-aksem*
-# RUN cargo build --release
-# RUN rm -f target/release/deps/rs-aksem*
-# RUN cargo build --release
-# RUN cargo install --path .
-COPY . . 
-RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl 
 
-# Filnal Stage
-FROM alpine:latest
-COPY --from=cargo-builder /app/target/x86_64-unknown-linux-musl/release/rs-aksem /usr/local/bin/rs-aksem
-CMD [ "rs-aksem" ]
+RUN cargo install cargo-chef --version 0.1.67
+COPY . .
+RUN cargo chef prepare  --recipe-path recipe.json
+
+FROM ${BASE_IMAGE} AS cacher
+
+WORKDIR /app
+RUN cargo install cargo-chef --version 0.1.67
+COPY --from=planner /app/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json
+
+FROM $BASE_IMAGE as builder
+WORKDIR /app
+
+# Copy over the cached dependencies
+COPY --from=cacher /app/target target
+COPY --from=cacher $CARGO_HOME $CARGO_HOME
+
+RUN rustup target add x86_64-unknown-linux-musl
+RUN cargo install --target x86_64-unknown-linux-musl --path .
+
+FROM scratch
+COPY --from=builder /usr/local/cargo/bin/rs-aksem .
+CMD ["./rs-aksem"]

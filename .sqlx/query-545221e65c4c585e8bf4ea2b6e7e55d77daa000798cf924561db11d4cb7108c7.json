@@ -68,7 +68,7 @@
         "name": "created_at?",
         "type_info": {
           "type": "Timestamp",
-          "flags": "UNSIGNED | BINARY",
+          "flags": "BINARY",
           "char_set": 63,
           "max_size": 19
         }
@@ -78,7 +78,7 @@
         "name": "updated_at?",
         "type_info": {
           "type": "Timestamp",
-          "flags": "UNSIGNED | BINARY",
+          "flags": "BINARY",
           "char_set": 63,
           "max_size": 19
         }
